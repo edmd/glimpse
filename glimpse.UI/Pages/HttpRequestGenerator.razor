@@ -1,0 +1,127 @@
+﻿@page "/request"
+
+@using glimpse_data.Models
+@using Microsoft.AspNetCore.Components
+@using System.Net;
+@using System.ComponentModel.DataAnnotations;
+
+<h1>Http Request Generator</h1>
+
+<p>Send a custom request to a given endpoint.</p>
+
+<h3>Request: </h3>
+
+<p>Url: <input type="text" size="100" id="urlText" name="urlText"></p>
+
+<p>
+    Header name: <input @bind="AddRequestHeaderName" type="text"><br />
+    Header value: <input @bind="AddRequestHeaderValue" type="text"><br />
+    <input type="button" id="addRequestButton" name="addRequestButton" @onclick="@((e) => AddRequestHeader())" value="Add Header">
+    <br />
+
+    @if (this.model.RequestHeaders != null)
+    {
+        foreach (var item in this.model.RequestHeaders)
+        {
+            <div>
+                <label for="@item.Key">
+                    @item.Key:
+                    @item.Value
+                    <input type="checkbox" id="@item.Key" checked="checked" @onchange="@((e) => RequestCheckboxChanged(e, item.Key))" />
+                </label>
+            </div>
+        }
+    }
+</p>
+
+<p>
+    <select>
+        @foreach (var method in Enum.GetValues(typeof(HttpMethods)))
+        {
+            <option value=@method>@method</option>
+        }
+    </select>
+</p>
+
+<p>
+    <textarea id="requestBody" name="requestBody" @bind="model.RequestBody" />
+</p>
+
+<h3>Expected Response: </h3>
+
+<p>
+    Header name: <input @bind="AddResponseHeaderName" type="text"><br />
+    Header value: <input @bind="AddResponseHeaderValue" type="text"><br />
+    <input type="button" id="addResponseButton" name="addResponseButton" @onclick="@((e) => AddResponseHeader())" value="Add Header">
+
+    @if (this.model.ResponseHeaders != null)
+    {
+        foreach (var item in this.model.ResponseHeaders)
+        {
+            <div>
+                <label for="@item.Key">
+                    @item.Key:
+                    @item.Value
+                    <input type="checkbox" id="@item.Key" checked="checked" @onchange="@((e) => ResponseCheckboxChanged(e, item.Key))" />
+                </label>
+            </div>
+        }
+    }
+</p>
+
+<p>
+    <select>
+        @foreach (var method in Enum.GetValues(typeof(HttpStatusCode)))
+        {
+            <option value=@method>@method</option>
+        }
+    </select>
+</p>
+
+<p>
+    <textarea id="responseBody" name="responseBody" @bind="model.ResponseBody" />
+</p>
+
+<input type="button" id="addButton" name="addButton" @onclick="@((e) => AddRequestHeader())" value="Add Header">
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: An Id should come through as a QueryString parameter to retrieve a model
+        model = new RequestResponse();
+    }
+    [Parameter]
+    public RequestResponse model { get; set; }
+    // Request
+    [Parameter]
+    public string AddRequestHeaderName { get; set; }
+    [Parameter]
+    public string AddRequestHeaderValue { get; set; }
+    private void AddRequestHeader()
+    {
+        if (!string.IsNullOrEmpty(AddRequestHeaderName))
+        {
+            model.AddRequestHeader(AddRequestHeaderName, AddRequestHeaderValue);
+        }
+    }
+    private void RequestCheckboxChanged(ChangeEventArgs e, string key)
+    {
+        this.model.RemoveRequestHeader(key);
+    }
+    // Response
+    [Parameter]
+    public string AddResponseHeaderName { get; set; }
+    [Parameter]
+    public string AddResponseHeaderValue { get; set; }
+    private void AddResponseHeader()
+    {
+        if (!string.IsNullOrEmpty(AddResponseHeaderName))
+        {
+            model.AddResponseHeader(AddResponseHeaderName, AddResponseHeaderValue);
+        }
+    }
+    private void ResponseCheckboxChanged(ChangeEventArgs e, string key)
+    {
+        this.model.RemoveResponseHeader(key);
+    }
+}

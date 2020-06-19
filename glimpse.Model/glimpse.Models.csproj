@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>glimpse_data.Models</RootNamespace>
+    <UserSecretsId>6e76a95b-09af-4b39-a4ea-66ee0d188854</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Messaging\IMessagesRepository.cs" />
+    <Compile Remove="Messaging\InMemoryMessagesRepository.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.46.0.1985" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.5" />
+    <PackageReference Include="MimeKit" Version="2.8.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.1.0" />
+  </ItemGroup>
+</Project>
