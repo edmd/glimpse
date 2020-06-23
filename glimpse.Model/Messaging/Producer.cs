@@ -3,7 +3,7 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public class Producer : IProducer
     {

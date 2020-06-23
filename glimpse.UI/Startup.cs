@@ -11,14 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
-using glimpse_data.Models.Repository;
+using glimpse.Models.Repository;
 using Microsoft.AspNetCore.Mvc;
-using glimpse_data.Models;
+using glimpse.Models;
 using RabbitMQ.Client;
-using glimpse_data.Models.Messaging;
+using glimpse.Models.Messaging;
 using Microsoft.Extensions.Logging;
 
-namespace glimpse_data
+namespace glimpse
 {
     public class Startup
     {
@@ -37,8 +37,8 @@ namespace glimpse_data
 
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<RequestService>();
-            services.AddSingleton<HeaderService>();
+            //services.AddSingleton<RequestService>();
+            //services.AddSingleton<HeaderService>();
 
             services.AddDbContext<DataContext>(options =>
                 options.UseInMemoryDatabase(databaseName: "GlimpseDatabase"));
@@ -73,6 +73,12 @@ namespace glimpse_data
                 var consumer = new Consumer(channel.Reader, logger, 1, repo);
 
                 return consumer;
+            });
+
+            services.AddSingleton<IHttpEventManager>(ctx => {
+                var context = ctx.GetRequiredService<DataContext>();
+                var publisher = ctx.GetRequiredService<RabbitPublisher>();
+                return new HttpEventManager(context, publisher);
             });
 
             services.AddHostedService<BackgroundSubscriberWorker>();

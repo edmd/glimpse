@@ -1,11 +1,11 @@
-﻿using glimpse_data.Models.Repository;
+﻿using glimpse.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public class RequestService : IRequestService
     {

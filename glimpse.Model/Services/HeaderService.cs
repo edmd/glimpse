@@ -1,11 +1,11 @@
-﻿using glimpse_data.Models.Repository;
+﻿using glimpse.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public class HeaderService : IHeaderService
     {
@@ -16,17 +16,16 @@ namespace glimpse_data.Models
             _context = context;
         }
 
-        public Task<List<Header>> GetHeaders(Guid? groupId)
+        public Task<List<Header>> GetHeaders(Guid? requestHeaderGroupId, Guid? responseHeaderGroupId)
         {
             var list = (List<Header>)null;
 
-            if(groupId != null && groupId != Guid.Empty)
+            if(requestHeaderGroupId != null && requestHeaderGroupId != Guid.Empty)
             {
-                list = _context.Headers
-                    .Where(x => x.GroupId == groupId).ToList();
+                list = _context.Headers.Where(x => x.RequestHeaderGroupId == requestHeaderGroupId).ToList();
             } else
             {
-                list = _context.Headers.ToList();
+                list = _context.Headers.Where(x => x.ResponseHeaderGroupId == responseHeaderGroupId).ToList();
             }
 
             return Task.FromResult(list);
@@ -34,8 +33,7 @@ namespace glimpse_data.Models
 
         public Task<Header> GetHeader(Guid id)
         {
-            var header = _context.Headers
-                .FirstOrDefault(i => i.Id == id);
+            var header = _context.Headers.FirstOrDefault(i => i.HeaderId == id);
 
             return Task.FromResult(header);
         }

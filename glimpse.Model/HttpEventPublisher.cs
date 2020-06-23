@@ -1,11 +1,8 @@
-﻿using glimpse_data.Models.Messaging;
-using RabbitMQ.Client;
+﻿using glimpse.Models.Messaging;
 using System;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     /// <summary>
     /// An HttpEventPublisher is instantiated for each instance of RequestResponse, it calls the 

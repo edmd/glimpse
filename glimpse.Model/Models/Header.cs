@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     [JsonObject]
     [JsonConverter(typeof(HeaderJsonConverter))]
@@ -10,18 +10,20 @@ namespace glimpse_data.Models
     {
         [Key]
         [JsonProperty]
-        public Guid Id { get; set; }
-
-        [JsonProperty]
-        public Guid GroupId { get; set; }
+        public Guid HeaderId { get; set; }
 
         [JsonProperty]
         public string Key { get; set; }
 
         [JsonProperty]
         public string Value { get; set; }
-    }
 
+        public Guid? RequestHeaderGroupId { get; set; }
+
+        public Guid? ResponseHeaderGroupId { get; set; }
+
+        public virtual RequestResponse RequestResponse { get; set; }
+    }
 
     public class HeaderJsonConverter : JsonConverter
     {

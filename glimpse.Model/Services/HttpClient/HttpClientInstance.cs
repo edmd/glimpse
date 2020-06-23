@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     // Request headers, body, url, method, (delay?)
     // Pass in expected response headers, httpstatus and body

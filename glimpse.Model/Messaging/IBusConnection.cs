@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public interface IBusConnection
     {

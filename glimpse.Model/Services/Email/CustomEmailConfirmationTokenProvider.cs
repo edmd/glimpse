@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace glimpse_data.Models.Services
+namespace glimpse.Models.Services
 {
     public class CustomEmailConfirmationTokenProvider<TUser>
                                            : DataProtectorTokenProvider<TUser> where TUser : class

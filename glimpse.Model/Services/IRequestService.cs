@@ -1,10 +1,10 @@
-﻿using glimpse_data.Models;
+﻿using glimpse.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public interface IRequestService
     {

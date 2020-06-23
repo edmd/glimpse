@@ -2,26 +2,26 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public enum HttpMethods
     {
-        GET,
-        PUT,
-        POST,
-        PATCH,
-        HEAD,
-        TRACE,
-        DELETE,
-        SEARCH,
         CONNECT,
+        COPY,
+        DELETE,
+        GET,
+        HEAD,
+        LOCK,
+        MKCOL,
+        MOVE,
+        OPTIONS,
+        PATCH,
+        POST,
         PROPFIND,
         PROPPATCH,
-        MKCOL,
-        COPY,
-        MOVE,
-        LOCK,
+        PUT,
+        SEARCH,
+        TRACE,
         UNLOCK,
-        OPTIONS
     }
 }

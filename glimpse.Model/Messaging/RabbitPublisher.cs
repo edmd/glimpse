@@ -3,7 +3,7 @@ using System;
 using System.Text.Json;
 using System.Text;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public class RabbitPublisher : IDisposable
     {

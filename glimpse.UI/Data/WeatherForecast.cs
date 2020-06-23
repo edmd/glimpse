@@ -1,6 +1,6 @@
 using System;
 
-namespace glimpse_data.Data
+namespace glimpse.Data
 {
     public class WeatherForecast
     {

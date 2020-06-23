@@ -1,7 +1,7 @@
 ﻿using System;
 using RabbitMQ.Client;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
 
     public class RabbitPersistentConnection : IDisposable, IBusConnection

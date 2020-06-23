@@ -1,14 +1,14 @@
-﻿using glimpse_data.Models;
+﻿using glimpse.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public interface IHeaderService
     {
-        Task<List<Header>> GetHeaders(Guid? groupId);
+        Task<List<Header>> GetHeaders(Guid? requestHeaderGroupId, Guid? responseHeaderGroupId);
 
         Task<Header> GetHeader(Guid id);
 

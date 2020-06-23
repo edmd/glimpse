@@ -1,7 +1,7 @@
-﻿using glimpse_data.Models;
+﻿using glimpse.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace glimpse_data.Models.Repository
+namespace glimpse.Models.Repository
 {
     public class DataContext : DbContext
     {

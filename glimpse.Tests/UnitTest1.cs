@@ -1,6 +1,6 @@
 using NUnit.Framework;
 
-namespace glimpse_data.Tests
+namespace glimpse.Tests
 {
     public class Tests
     {

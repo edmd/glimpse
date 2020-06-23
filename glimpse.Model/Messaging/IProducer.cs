@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public interface IProducer
     {

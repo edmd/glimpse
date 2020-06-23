@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public class RequestResponse : RequestResponseJsonConverter
     {
@@ -15,14 +16,21 @@ namespace glimpse_data.Models
         public Guid Id { get; set; }
 
         [JsonProperty]
-        public Guid RequestGroupId { get; set; }
+        //[ForeignKey("RequestHeader"), Column(Order = 0)]
+        public Guid? RequestHeaderGroupId { get; set; }
 
         [JsonProperty]
-        public Guid ResponseGroupId { get; set; }
+        //[ForeignKey("ResponseHeader"), Column(Order = 1)]
+        public Guid? ResponseHeaderGroupId { get; set; }
 
         [JsonProperty]
         public bool IsActive { get; set; }
 
+        /// <summary>
+        /// We can use the Interval property to determine if the message on the queue is stale by
+        /// comparing the time it was placed on the queue to the curent time and if the timespan is
+        /// say double the interval discard message
+        /// </summary>
         [JsonProperty]
         public int Interval { get; set; }
 
@@ -33,6 +41,7 @@ namespace glimpse_data.Models
         public Uri Url { get; set; }
 
         [JsonProperty]
+        [ForeignKey("RequestHeaderGroupId")]
         public virtual ICollection<Header> RequestHeaders { get;
             // Set not being added here
         }
@@ -67,6 +76,7 @@ namespace glimpse_data.Models
         public HttpStatusCode ResponseStatus { get; set; }
 
         [JsonProperty]
+        [ForeignKey("ResponseHeaderGroupId")]
         public virtual ICollection<Header> ResponseHeaders { get;
             // Set not being added here
         }

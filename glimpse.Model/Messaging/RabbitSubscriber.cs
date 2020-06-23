@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public class RabbitSubscriber : ISubscriber, IDisposable
     {

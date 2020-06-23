@@ -3,9 +3,9 @@ using System.Threading.Channels;
 using System.Threading;
 using System;
 using Microsoft.Extensions.Logging;
-using 
+using glimpse.Models.Repository;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public class Consumer : IConsumer
     {
@@ -14,7 +14,6 @@ namespace glimpse_data.Models.Messaging
 
         private readonly IRequestResponseRepository _messagesRepository;
         private readonly int _instanceId;
-        private static readonly Random Random = new Random();
 
         public Consumer(ChannelReader<RequestResponse> reader, ILogger<Consumer> logger, int instanceId, IRequestResponseRepository messagesRepository)
         {
@@ -30,11 +29,11 @@ namespace glimpse_data.Models.Messaging
 
             try
             {
-                await foreach (var message in _reader.ReadAllAsync(cancellationToken))
+                await foreach (var requestResponse in _reader.ReadAllAsync(cancellationToken))
                 {
-                    _logger.LogInformation($"CONSUMER ({_instanceId})> Received message {message.Id} : {message.Text}");
+                    _logger.LogInformation($"CONSUMER ({_instanceId})> Received message {requestResponse.Id}");
                     await Task.Delay(500, cancellationToken);
-                    _messagesRepository.Add(message);
+                    _messagesRepository.Add(requestResponse);
                 }
             }
             catch (OperationCanceledException ex)

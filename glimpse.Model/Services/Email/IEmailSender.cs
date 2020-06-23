@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace glimpse_data.Models.Services
+namespace glimpse.Models.Services
 {
     public interface IEmailSender
     {

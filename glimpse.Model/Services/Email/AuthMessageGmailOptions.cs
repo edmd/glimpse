@@ -1,5 +1,5 @@
 ﻿
-namespace glimpse_data.Models
+namespace glimpse.Models
 {
     public class AuthMessageGmailOptions
     {

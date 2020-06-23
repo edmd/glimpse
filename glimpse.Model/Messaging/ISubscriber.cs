@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client.Events;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public interface ISubscriber
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace glimpse_data.Models.Messaging
+namespace glimpse.Models.Messaging
 {
     public class RabbitSubscriberEventArgs : EventArgs{
         public RabbitSubscriberEventArgs(RequestResponse requestResponse) {

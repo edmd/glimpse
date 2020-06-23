@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Google.Apis.Gmail.v1;
 
-namespace glimpse_data.Models.Services
+namespace glimpse.Models.Services
 {
     public class EmailSender : IEmailSender
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace glimpse_data.Models.Repository
+namespace glimpse.Models.Repository
 {
     public interface IRequestResponseRepository
     {

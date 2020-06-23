@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>glimpse_data.Models</RootNamespace>
+    <RootNamespace>glimpse.Models</RootNamespace>
     <UserSecretsId>6e76a95b-09af-4b39-a4ea-66ee0d188854</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>

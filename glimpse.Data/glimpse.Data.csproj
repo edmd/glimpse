@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>glimpse_data.Data</RootNamespace>
+    <RootNamespace>glimpse.Data</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\glimpse-data.Model\glimpse-data.Models.csproj" />
+    <ProjectReference Include="..\glimpse.Model\glimpse.Models.csproj" />
   </ItemGroup>
 
 </Project>

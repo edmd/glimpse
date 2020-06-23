@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace glimpse_data.Data
+namespace glimpse.Data
 {
     public class WeatherForecastService
     {
