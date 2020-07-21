@@ -7,6 +7,6 @@ namespace glimpse.Models.Messaging
             this.RequestResponse = requestResponse;
         }
 
-        public RequestResponse RequestResponse { get; }
+        public RequestResponse RequestResponse { get; set; }
     }
 }

@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.UI", "glimpse.UI\gl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Models", "glimpse.Model\glimpse.Models.csproj", "{1FF83613-06EB-4AD6-8BB2-7A1C0DF1BDB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "glimpse.Data", "glimpse.Data\glimpse.Data.csproj", "{FEA6846F-4A1E-4778-A9A8-1DC97EADC773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Data", "glimpse.Data\glimpse.Data.csproj", "{FEA6846F-4A1E-4778-A9A8-1DC97EADC773}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "glimpse.Tests", "glimpse.Tests\glimpse.Tests.csproj", "{33FE4458-EFDE-47A4-A5C1-9896809B3146}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Tests", "glimpse.Tests\glimpse.Tests.csproj", "{33FE4458-EFDE-47A4-A5C1-9896809B3146}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Publisher", "glimpse.Publisher\glimpse.Publisher.csproj", "{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{33FE4458-EFDE-47A4-A5C1-9896809B3146}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33FE4458-EFDE-47A4-A5C1-9896809B3146}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33FE4458-EFDE-47A4-A5C1-9896809B3146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

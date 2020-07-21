@@ -1,4 +1,5 @@
 ﻿using glimpse.Models;
+using glimpse.Models.HttpEvent;
 using Microsoft.EntityFrameworkCore;
 
 namespace glimpse.Models.Repository
@@ -13,5 +14,7 @@ namespace glimpse.Models.Repository
         public DbSet<RequestResponse> RequestResponses { get; set; }
 
         public DbSet<Header> Headers { get; set; }
+
+        public DbSet<HttpResponseEvent> HttpResponseEvents { get; set; }
     }
 }

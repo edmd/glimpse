@@ -1,9 +1,10 @@
-using System.Threading.Tasks;
-using System.Threading.Channels;
-using System.Threading;
-using System;
-using Microsoft.Extensions.Logging;
 using glimpse.Models.Repository;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace glimpse.Models.Messaging
 {
@@ -12,15 +13,18 @@ namespace glimpse.Models.Messaging
         private readonly ChannelReader<RequestResponse> _reader;
         private readonly ILogger<Consumer> _logger;
 
-        private readonly IRequestResponseRepository _messagesRepository;
+        //private readonly IRequestResponseRepository _messagesRepository;
         private readonly int _instanceId;
 
-        public Consumer(ChannelReader<RequestResponse> reader, ILogger<Consumer> logger, int instanceId, IRequestResponseRepository messagesRepository)
+        public Consumer(ChannelReader<RequestResponse> reader, 
+            ILogger<Consumer> logger, int instanceId
+            //, IRequestResponseRepository messagesRepository
+            )
         {
             _reader = reader;
             _instanceId = instanceId;
             _logger = logger;
-            _messagesRepository = messagesRepository;
+            //_messagesRepository = messagesRepository;
         }
 
         public async Task BeginConsumeAsync(CancellationToken cancellationToken = default)
@@ -29,11 +33,11 @@ namespace glimpse.Models.Messaging
 
             try
             {
-                await foreach (var requestResponse in _reader.ReadAllAsync(cancellationToken))
+                await foreach (var message in _reader.ReadAllAsync(cancellationToken))
                 {
-                    _logger.LogInformation($"CONSUMER ({_instanceId})> Received message {requestResponse.Id}");
+                    _logger.LogInformation($"CONSUMER ({_instanceId})> Received message {message.Id} : {message.Url}");
                     await Task.Delay(500, cancellationToken);
-                    _messagesRepository.Add(requestResponse);
+                    //_messagesRepository.Add(message);
                 }
             }
             catch (OperationCanceledException ex)
@@ -43,6 +47,5 @@ namespace glimpse.Models.Messaging
 
             _logger.LogInformation($"Consumer {_instanceId} > shutting down");
         }
-
     }
 }

@@ -1,22 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using glimpse.Models;
+using glimpse.Models.Messaging;
+using glimpse.Models.Repository;
+using glimpse.Models.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory;
-using glimpse.Models.Repository;
-using Microsoft.AspNetCore.Mvc;
-using glimpse.Models;
-using RabbitMQ.Client;
-using glimpse.Models.Messaging;
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
+using System;
 
 namespace glimpse
 {
@@ -29,56 +23,68 @@ namespace glimpse
             Configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            //services.AddSingleton<RequestService>();
-            //services.AddSingleton<HeaderService>();
 
             services.AddDbContext<DataContext>(options =>
                 options.UseInMemoryDatabase(databaseName: "GlimpseDatabase"));
 
-            services.AddSingleton<IRequestResponseRepository, RequestResponseRepository>();
-            services.AddSingleton<IConnectionFactory>(ctx =>
-            {
-                var connStr = this.Configuration["Rabbit"];
-                return new ConnectionFactory()
-                {
-                    Uri = new Uri(connStr),
-                    DispatchConsumersAsync = true // this is mandatory to have Async Subscribers
-                };
+            services.AddHttpClient<RequestResponseClient>("RequestResponseClient", client => {
+                client.Timeout = TimeSpan.FromSeconds(10);
             });
-            services.AddSingleton<IBusConnection, RabbitPersistentConnection>();
-            services.AddSingleton<ISubscriber, RabbitSubscriber>();
+
+            services.AddSingleton<IRequestResponseRepository, RequestResponseRepository>();
+            services.AddSingleton<IHttpResponseEventRepository, HttpResponseEventRepository>();
+
+            services.AddSingleton<IHttpClientInstance>(ctx => {
+                var requestResponseClient = ctx.GetRequiredService<RequestResponseClient>().Client;
+                var httpClientInstance = new HttpClientInstance(requestResponseClient);
+                return httpClientInstance;
+            });
+
+            services.AddSingleton<IConnectionFactory>(ctx => {
+                var connStr = this.Configuration["Rabbit"];
+                var connFactory = new ConnectionFactory() {
+                    Uri = new Uri(connStr),
+                    DispatchConsumersAsync = true // This is mandatory to have Async Subscribers
+                };
+                return connFactory;
+            });
+
+            services.AddSingleton<IBusConnection>(ctx => {
+                var connFactory = ctx.GetRequiredService<IConnectionFactory>();
+                var persistentConnection = new RabbitPersistentConnection(connFactory);
+                return persistentConnection;
+            });
+
+            services.AddSingleton<ISubscriber>(ctx => {
+                var busConn = ctx.GetRequiredService<IBusConnection>();
+                var subscriber = new RabbitSubscriber(busConn);
+                return subscriber;
+            });
 
             var channel = System.Threading.Channels.Channel.CreateBounded<RequestResponse>(100);
             services.AddSingleton(channel);
 
-            services.AddSingleton<IProducer>(ctx => {
+            services.AddSingleton<IProducer>(ctx =>
+            {
                 var channel = ctx.GetRequiredService<System.Threading.Channels.Channel<RequestResponse>>();
                 var logger = ctx.GetRequiredService<ILogger<Producer>>();
-                return new Producer(channel.Writer, logger);
+                var instance = ctx.GetRequiredService<IHttpClientInstance>();
+                var requestRepo = ctx.GetRequiredService<IRequestResponseRepository>();
+                var eventRepo = ctx.GetRequiredService<IHttpResponseEventRepository>();
+                var producer = new Producer(channel.Writer, logger, instance, requestRepo, eventRepo);
+                return producer;
             });
 
-            services.AddSingleton<IConsumer>(ctx => { 
+            services.AddSingleton<IConsumer>(ctx =>
+            {
                 var channel = ctx.GetRequiredService<System.Threading.Channels.Channel<RequestResponse>>();
                 var logger = ctx.GetRequiredService<ILogger<Consumer>>();
-                var repo = ctx.GetRequiredService<IRequestResponseRepository>();
-
-                var consumer = new Consumer(channel.Reader, logger, 1, repo);
-
+                var consumer = new Consumer(channel.Reader, logger, 1);
                 return consumer;
-            });
-
-            services.AddSingleton<IHttpEventManager>(ctx => {
-                var context = ctx.GetRequiredService<DataContext>();
-                var publisher = ctx.GetRequiredService<RabbitPublisher>();
-                return new HttpEventManager(context, publisher);
             });
 
             services.AddHostedService<BackgroundSubscriberWorker>();

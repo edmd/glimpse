@@ -6,6 +6,6 @@ namespace glimpse.Models
 {
     public interface IHttpEventManager
     {
-        void Refresh();
+        void ForceRefresh();
     }
 }

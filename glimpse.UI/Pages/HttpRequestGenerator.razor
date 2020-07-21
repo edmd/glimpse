@@ -101,7 +101,7 @@
     {
         if (!string.IsNullOrEmpty(AddRequestHeaderName))
         {
-            model.AddRequestHeader(AddRequestHeaderName, AddRequestHeaderValue);
+            model.AddRequestHeader(AddRequestHeaderName, AddRequestHeaderValue, null);
         }
     }
     private void RequestCheckboxChanged(ChangeEventArgs e, string key)
@@ -117,7 +117,7 @@
     {
         if (!string.IsNullOrEmpty(AddResponseHeaderName))
         {
-            model.AddResponseHeader(AddResponseHeaderName, AddResponseHeaderValue);
+            model.AddResponseHeader(AddResponseHeaderName, AddResponseHeaderValue, null);
         }
     }
     private void ResponseCheckboxChanged(ChangeEventArgs e, string key)

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using glimpse.Models.HttpEvent;
+using glimpse.Models.Services;
+using System;
+using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,87 +11,100 @@ namespace glimpse.Models
 {
     // Request headers, body, url, method, (delay?)
     // Pass in expected response headers, httpstatus and body
-    public class HttpClientInstance
+    public class HttpClientInstance : IHttpClientInstance
     {
-        private readonly IHttpClientFactory _clientFactory;
+        private readonly HttpClient _httpClient;
 
-        private readonly ICollection<Header> _requestHeaders;
-        private readonly Uri _url;
-        private readonly HttpMethod _method;
-        private readonly string _requestBody;
-
-        private readonly HttpStatusCode _responseStatus;
-        private readonly ICollection<Header> _responseHeaders;
-        private readonly string _responseBody;
-
-        private readonly int _acceptableThreshold;
-
-        public HttpClientInstance(IHttpClientFactory clientFactory, RequestResponse requestResponse, 
-            int acceptableThreshold = 60)
+        public HttpClientInstance(HttpClient httpClient)
         {
-            _clientFactory = clientFactory;
-
-            _requestHeaders = requestResponse.RequestHeaders;
-            _url = requestResponse.Url;
-            _method = requestResponse.Method;
-            _requestBody = requestResponse.RequestBody;
-
-            _responseStatus = requestResponse.ResponseStatus;
-            _responseHeaders = requestResponse.ResponseHeaders;
-            _responseBody = requestResponse.ResponseBody;
-
-            _acceptableThreshold = acceptableThreshold;
+            _httpClient = httpClient;
         }
 
-        public async Task OnGet()
+        public async Task<Tuple<RequestResponse, HttpResponseEvent>> OnGet(RequestResponse requestResponse)
         {
-            // Generate cancellation tokens
-            var tokenSource = new CancellationTokenSource();
-            var token = tokenSource.Token;
+            var _requestResponse = requestResponse;
+            var _httpResponseEvent = new HttpResponseEvent();
+            var stopWatch = new Stopwatch();
+            _httpResponseEvent.RequestResponseId = requestResponse.Id;
 
-
-            var request = new HttpRequestMessage(_method, _url);
-
-            if (_requestHeaders != null)
+            try
             {
-                foreach (var item in _requestHeaders)
+                // Generate cancellation tokens
+                var tokenSource = new CancellationTokenSource();
+                var token = tokenSource.Token;
+
+                var request = new HttpRequestMessage(new HttpMethod(requestResponse.Method), requestResponse.Url);
+
+                if (requestResponse.RequestHeaders != null)
                 {
-                    request.Headers.Add(item.Key, item.Value);
+                    foreach (var item in requestResponse.RequestHeaders)
+                    {
+                        request.Headers.Add(item.Key, item.Value);
+                    }
                 }
-            }
 
-            if(_requestBody != null)
-            {
-                var content = new StringContent(_requestBody);
-                request.Content = content;
-            }
+                if (!string.IsNullOrEmpty(requestResponse.RequestBody))
+                {
+                    var content = new StringContent(requestResponse.RequestBody);
+                    request.Content = content;
+                }
 
-            var client = _clientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(_acceptableThreshold);
-            var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
+                stopWatch.Start();
+                _httpResponseEvent.StartDate = DateTime.Now;
+                _httpResponseEvent.ResponseType = HttpResponseType.Green;
 
-            if(response.StatusCode != _responseStatus)
-            {
-                // Raise Api monitoring error event
-            }
+                var response = await _httpClient.SendAsync(request, CancellationToken.None);
 
-            var responseString = await response.Content.ReadAsStringAsync();
-            
-            if(string.Compare(responseString, _responseBody) != 0)
-            {
-                // Raise Api monitoring error event
-            }
+                stopWatch.Stop();
+                _httpResponseEvent.ElapsedTime = stopWatch.Elapsed;
+                if(requestResponse.AcceptableResponseTimeMs < _httpResponseEvent.ElapsedTime.TotalMilliseconds)
+                {
+                    _httpResponseEvent.ResponseType = HttpResponseType.Amber;
+                }
 
-            var responseHeaders = response.Headers;
-
-            // check only the values we're interested in
-            foreach(var header in _responseHeaders)
-            {
-                if (string.Compare(responseHeaders.GetValues(header.Key).FirstOrDefault(), header.Value) != 0)
+                _requestResponse.ResponseStatus = response.StatusCode;
+                if (response.StatusCode != requestResponse.ResponseStatus)
                 {
                     // Raise Api monitoring error event
+                    _httpResponseEvent.ResponseType = HttpResponseType.Red;
                 }
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                _requestResponse.ResponseBody = responseString;
+
+                if (string.Compare(responseString, requestResponse.ResponseBody) != 0)
+                {
+                    // Raise Api monitoring error event
+                    _httpResponseEvent.ResponseType = HttpResponseType.Red;
+                }
+
+                if (requestResponse.ResponseHeaders != null)
+                {
+                    // check only the values we're interested in
+                    foreach (var header in requestResponse.ResponseHeaders)
+                    {
+                        _requestResponse.ResponseHeaders.Add(header);
+                        var responseHeader = response.Headers.GetValues(header.Key).FirstOrDefault();
+                        if (!string.IsNullOrEmpty(responseHeader) && string.Compare(responseHeader, header.Value) != 0)
+                        {
+                            // Raise Api monitoring error event
+                            _httpResponseEvent.ResponseType = HttpResponseType.Red;
+                        }
+                    }
+                }
+
+                return new Tuple<RequestResponse, HttpResponseEvent>(
+                    _requestResponse, _httpResponseEvent); ;
+            } catch(Exception ex)
+            {
+                stopWatch.Stop();
+                _httpResponseEvent.ElapsedTime = stopWatch.Elapsed;
+
+                var message = ex.Message;
             }
+
+            return new Tuple<RequestResponse, HttpResponseEvent>(
+                _requestResponse, _httpResponseEvent);
         }
     }
 }

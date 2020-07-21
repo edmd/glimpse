@@ -23,24 +23,20 @@ namespace glimpse.Models.Messaging
         private void InitChannel()
         {
             _channel?.Dispose();
-            
             _channel = _connection.CreateChannel();
-
             _channel.ExchangeDeclare(exchange: ExchangeName, type: ExchangeType.Fanout);
-            
-            // since we're using a Fanout exchange, we don't specify the name of the queue
-            // but we let Rabbit generate one for us. This also means that we need to store the
-            // queue name to be able to consume messages from it
+
+            // Since we're using a Fanout exchange we let Rabbit generate a 
+            // queue name for us. This also means that we need to store 
+            // the queue name to be able to consume messages from it
             _queue = _channel.QueueDeclare(queue: string.Empty,
                 durable: false,
                 exclusive: false,
                 autoDelete: true,
                 arguments: null);
+            _channel.QueueBind(queue: String.Empty, exchange: ExchangeName, routingKey: "");
 
-            _channel.QueueBind(_queue.QueueName, ExchangeName, string.Empty, null);
-
-            _channel.CallbackException += (sender, ea) =>
-            {
+            _channel.CallbackException += (sender, ea) => {
                 InitChannel();
                 InitSubscription();
             };
@@ -52,14 +48,14 @@ namespace glimpse.Models.Messaging
             
             consumer.Received += OnMessageReceivedAsync;
             
-            _channel.BasicConsume(queue: _queue.QueueName, autoAck: false, consumer: consumer);
+            _channel.BasicConsume(queue: _queue.QueueName, autoAck: true, consumer: consumer);
         }
 
         private async Task OnMessageReceivedAsync(object sender, BasicDeliverEventArgs eventArgs)
         {
             var body = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
-            var message = JsonSerializer.Deserialize<RequestResponse>(body);
-            await this.OnMessage(this, new RabbitSubscriberEventArgs(message));
+            var requestResponse = JsonSerializer.Deserialize<RequestResponse>(body);
+            await this.OnMessage(this, new RabbitSubscriberEventArgs(requestResponse));
         }
 
         public event AsyncEventHandler<RabbitSubscriberEventArgs> OnMessage;

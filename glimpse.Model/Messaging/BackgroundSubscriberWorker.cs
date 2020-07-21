@@ -26,7 +26,7 @@ namespace glimpse.Models.Messaging
             _producer = producer ?? throw new ArgumentNullException(nameof(producer));
             _consumers = consumers ?? Enumerable.Empty<Consumer>();
         }
- 
+
         private async Task OnMessageAsync(object sender, RabbitSubscriberEventArgs args)
         {
             _logger.LogInformation($"Got a new request: {args.RequestResponse.Url}");
@@ -37,7 +37,7 @@ namespace glimpse.Models.Messaging
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _subscriber.Start();
-            
+
             var consumerTasks = _consumers.Select(c => c.BeginConsumeAsync(stoppingToken));
             await Task.WhenAll(consumerTasks);
         }

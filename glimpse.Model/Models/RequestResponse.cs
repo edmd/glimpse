@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 
 namespace glimpse.Models
 {
@@ -17,11 +16,11 @@ namespace glimpse.Models
 
         [JsonProperty]
         //[ForeignKey("RequestHeader"), Column(Order = 0)]
-        public Guid? RequestHeaderGroupId { get; set; }
+        public Guid RequestHeaderGroupId { get; set; }
 
         [JsonProperty]
         //[ForeignKey("ResponseHeader"), Column(Order = 1)]
-        public Guid? ResponseHeaderGroupId { get; set; }
+        public Guid ResponseHeaderGroupId { get; set; }
 
         [JsonProperty]
         public bool IsActive { get; set; }
@@ -42,27 +41,35 @@ namespace glimpse.Models
 
         [JsonProperty]
         [ForeignKey("RequestHeaderGroupId")]
-        public virtual ICollection<Header> RequestHeaders { get;
-            // Set not being added here
-        }
+        public virtual ICollection<Header> RequestHeaders { get; set; }
 
-        public void AddRequestHeader(string key, string value)
+        public void AddRequestHeader(string key, string value, Guid? requestHeaderGroupId)
         {
+            if(RequestHeaders == null) { RequestHeaders = new List<Header>(); }
+
             if (key != null && RequestHeaders.Count(x => x.Key == key) == 0)
             {
-                RequestHeaders.Add(new Header { Key = key, Value = value });
+                RequestHeaders.Add(new Header { HeaderId = Guid.NewGuid(), Key = key, Value = value });
+
+                if(requestHeaderGroupId.HasValue)
+                {
+                    RequestHeaderGroupId = requestHeaderGroupId.Value;
+                }
             }
         }
 
         public void RemoveRequestHeader(string key)
         {
-            var headerToRemove = RequestHeaders.First(x => x.Key == key);
-            RequestHeaders.Remove(headerToRemove);
+            if (RequestHeaders != null)
+            {
+                var headerToRemove = RequestHeaders.First(x => x.Key == key);
+                RequestHeaders.Remove(headerToRemove);
+            }
         }
 
         [Required]
         [JsonProperty]
-        public HttpMethod Method { get; set; }
+        public string Method { get; set; }
 
         [JsonProperty]
         public string RequestBody { get; set; }
@@ -77,15 +84,20 @@ namespace glimpse.Models
 
         [JsonProperty]
         [ForeignKey("ResponseHeaderGroupId")]
-        public virtual ICollection<Header> ResponseHeaders { get;
-            // Set not being added here
-        }
+        public virtual ICollection<Header> ResponseHeaders { get; set; }
 
-        public void AddResponseHeader(string key, string value)
+        public void AddResponseHeader(string key, string value, Guid? responseHeaderGroupId)
         {
+            if (ResponseHeaders == null) { ResponseHeaders = new List<Header>(); }
+
             if (key != null && ResponseHeaders.Count(x => x.Key == key) == 0)
             {
-                ResponseHeaders.Add(new Header { Key = key, Value = value });
+                ResponseHeaders.Add(new Header { HeaderId = Guid.NewGuid(), Key = key, Value = value });
+
+                if (responseHeaderGroupId.HasValue)
+                {
+                    ResponseHeaderGroupId = responseHeaderGroupId.Value;
+                }
             }
         }
 
@@ -97,6 +109,9 @@ namespace glimpse.Models
 
         [JsonProperty]
         public string ResponseBody { get; set; }
+
+        [JsonProperty]
+        public int AcceptableResponseTimeMs { get; set; }
 
         #endregion
     }
