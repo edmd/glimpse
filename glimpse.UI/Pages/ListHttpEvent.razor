@@ -1,0 +1,40 @@
+﻿@page "/httpevents"
+@page "/httpevents/{RequestResponseId:guid}"
+
+@using glimpse.Entities
+@using glimpse.Models.Repository
+@using Microsoft.AspNetCore.Components
+
+@inject IHttpResponseEventRepository _repository;
+
+<h3>Http Events</h3>
+
+@if (Events.Any())
+{
+    <div>@Events.First().Url</div>
+    foreach (var item in Events)
+    {
+        <div>
+            <label for="@item.ResponseType">@item.ResponseType</label>
+        </div>
+        <div>
+            <label for="@item.ElapsedTime">@item.ElapsedTime ms</label>
+        </div>
+        <div>
+            <label for="@item.StartDate">@item.StartDate</label>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public Guid? RequestResponseId { get; set; }
+
+    [Parameter]
+    public List<HttpResponseEvent> Events { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Events = _repository.GetEvents(RequestResponseId).Result.ToList();
+    }
+}

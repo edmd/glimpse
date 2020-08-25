@@ -1,5 +1,4 @@
-﻿using glimpse.Models.HttpEvent;
-using glimpse.Models.Services;
+﻿using glimpse.Entities;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -9,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace glimpse.Models
 {
-    // Request headers, body, url, method, (delay?)
-    // Pass in expected response headers, httpstatus and body
     public class HttpClientInstance : IHttpClientInstance
     {
         private readonly HttpClient _httpClient;
@@ -25,7 +22,8 @@ namespace glimpse.Models
             var _requestResponse = requestResponse;
             var _httpResponseEvent = new HttpResponseEvent();
             var stopWatch = new Stopwatch();
-            _httpResponseEvent.RequestResponseId = requestResponse.Id;
+            _httpResponseEvent.RequestResponse = requestResponse;
+            _httpResponseEvent.Url = requestResponse.Url;
 
             try
             {
@@ -35,9 +33,9 @@ namespace glimpse.Models
 
                 var request = new HttpRequestMessage(new HttpMethod(requestResponse.Method), requestResponse.Url);
 
-                if (requestResponse.RequestHeaders != null)
+                if (requestResponse.Headers != null)
                 {
-                    foreach (var item in requestResponse.RequestHeaders)
+                    foreach (var item in requestResponse.Headers.Where(x => x.IsRequestHeader == true))
                     {
                         request.Headers.Add(item.Key, item.Value);
                     }
@@ -78,12 +76,12 @@ namespace glimpse.Models
                     _httpResponseEvent.ResponseType = HttpResponseType.Red;
                 }
 
-                if (requestResponse.ResponseHeaders != null)
+                if (requestResponse.Headers != null)
                 {
                     // check only the values we're interested in
-                    foreach (var header in requestResponse.ResponseHeaders)
+                    foreach (var header in requestResponse.Headers.Where(x => x.IsRequestHeader == false))
                     {
-                        _requestResponse.ResponseHeaders.Add(header);
+                        _requestResponse.Headers.Add(header);
                         var responseHeader = response.Headers.GetValues(header.Key).FirstOrDefault();
                         if (!string.IsNullOrEmpty(responseHeader) && string.Compare(responseHeader, header.Value) != 0)
                         {
@@ -93,8 +91,7 @@ namespace glimpse.Models
                     }
                 }
 
-                return new Tuple<RequestResponse, HttpResponseEvent>(
-                    _requestResponse, _httpResponseEvent); ;
+                return new Tuple<RequestResponse, HttpResponseEvent>(_requestResponse, _httpResponseEvent);
             } catch(Exception ex)
             {
                 stopWatch.Stop();

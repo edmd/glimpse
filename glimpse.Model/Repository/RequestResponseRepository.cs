@@ -1,25 +1,53 @@
-﻿using System;
+﻿using glimpse.Data;
+using glimpse.Entities;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace glimpse.Models.Repository
 {
     public class RequestResponseRepository : IRequestResponseRepository
     {
-        private readonly Queue<RequestResponse> _messages;
+        private readonly DataContext _context;
 
-        public RequestResponseRepository()
+        public RequestResponseRepository(DataContext context)
         {
-            _messages = new Queue<RequestResponse>();
+            _context = context;
         }
 
-        public void Add(RequestResponse requestResponse)
+        public async Task Add(RequestResponse requestResponse)
         {
-            _messages.Enqueue(requestResponse ?? throw new ArgumentNullException(nameof(requestResponse)));
+            var results = new List<ValidationResult>();
+            bool isValid = Validator.TryValidateObject(requestResponse, 
+                new ValidationContext(requestResponse, null, null), results, true);
+
+            if (isValid)
+            {
+                _context.RequestResponses.Add(requestResponse);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                await Task.FromException(null); // Testing this out in the tests
+            }
         }
 
-        public IReadOnlyCollection<RequestResponse> GetMessages()
+        public async Task<RequestResponse> GetRequestResponse(Guid Id)
         {
-            return _messages.ToArray();
+            return _context.RequestResponses.FirstOrDefault(x => x.Id.Equals(Id));
+        }
+
+        public async Task<IEnumerable<RequestResponse>> GetRequestResponses(Guid? companyId)
+        {
+            if(companyId.HasValue)
+            {
+                return _context.RequestResponses.Where(x => x.CompanyId.Equals(companyId)).ToArray();
+            } else
+            {
+                return _context.RequestResponses.ToArray();
+            }
         }
     }
 }

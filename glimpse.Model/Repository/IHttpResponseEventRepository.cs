@@ -1,11 +1,13 @@
-﻿using glimpse.Models.HttpEvent;
+﻿using glimpse.Entities;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace glimpse.Models.Repository
 {
     public interface IHttpResponseEventRepository
     {
-        void Add(HttpResponseEvent responseEvent);
-        IReadOnlyCollection<HttpResponseEvent> GetEvents();
+        Task Add(HttpResponseEvent responseEvent);
+        Task<IEnumerable<HttpResponseEvent>> GetEvents(Guid? requestResponseId);
     }
 }

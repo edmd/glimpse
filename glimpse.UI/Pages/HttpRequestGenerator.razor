@@ -1,13 +1,12 @@
-﻿@page "/request"
+﻿@page "/composer"
 
-@using glimpse.Models
+@using glimpse.Entities
 @using Microsoft.AspNetCore.Components
-@using System.Net;
-@using System.ComponentModel.DataAnnotations;
+@using System.Net
 
 <h1>Http Request Generator</h1>
 
-<p>Send a custom request to a given endpoint.</p>
+<p>Send a crafted request to a given endpoint.</p>
 
 <h3>Request: </h3>
 
@@ -19,9 +18,9 @@
     <input type="button" id="addRequestButton" name="addRequestButton" @onclick="@((e) => AddRequestHeader())" value="Add Header">
     <br />
 
-    @if (this.model.RequestHeaders != null)
+    @if (model.Headers != null)
     {
-        foreach (var item in this.model.RequestHeaders)
+        foreach (var item in this.model.Headers)
         {
             <div>
                 <label for="@item.Key">
@@ -54,9 +53,9 @@
     Header value: <input @bind="AddResponseHeaderValue" type="text"><br />
     <input type="button" id="addResponseButton" name="addResponseButton" @onclick="@((e) => AddResponseHeader())" value="Add Header">
 
-    @if (this.model.ResponseHeaders != null)
+    @if (this.model.Headers != null)
     {
-        foreach (var item in this.model.ResponseHeaders)
+        foreach (var item in this.model.Headers)
         {
             <div>
                 <label for="@item.Key">
@@ -90,36 +89,45 @@
         // TODO: An Id should come through as a QueryString parameter to retrieve a model
         model = new RequestResponse();
     }
+
     [Parameter]
     public RequestResponse model { get; set; }
+
     // Request
     [Parameter]
     public string AddRequestHeaderName { get; set; }
+
     [Parameter]
     public string AddRequestHeaderValue { get; set; }
+
     private void AddRequestHeader()
     {
         if (!string.IsNullOrEmpty(AddRequestHeaderName))
         {
-            model.AddRequestHeader(AddRequestHeaderName, AddRequestHeaderValue, null);
+            model.AddRequestHeader(AddRequestHeaderName, AddRequestHeaderValue);
         }
     }
+
     private void RequestCheckboxChanged(ChangeEventArgs e, string key)
     {
         this.model.RemoveRequestHeader(key);
     }
+
     // Response
     [Parameter]
     public string AddResponseHeaderName { get; set; }
+
     [Parameter]
     public string AddResponseHeaderValue { get; set; }
+
     private void AddResponseHeader()
     {
         if (!string.IsNullOrEmpty(AddResponseHeaderName))
         {
-            model.AddResponseHeader(AddResponseHeaderName, AddResponseHeaderValue, null);
+            model.AddResponseHeader(AddResponseHeaderName, AddResponseHeaderValue);
         }
     }
+
     private void ResponseCheckboxChanged(ChangeEventArgs e, string key)
     {
         this.model.RemoveResponseHeader(key);

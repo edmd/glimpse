@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Data", "glimpse.Dat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Tests", "glimpse.Tests\glimpse.Tests.csproj", "{33FE4458-EFDE-47A4-A5C1-9896809B3146}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.Publisher", "glimpse.Publisher\glimpse.Publisher.csproj", "{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "glimpse.RequestResponses.Publisher", "glimpse.RequestResponse.Publisher\glimpse.RequestResponses.Publisher.csproj", "{6FF65B2E-FC33-4B6B-9CEF-8C45C03A1244}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

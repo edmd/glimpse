@@ -1,0 +1,49 @@
+﻿@page "/requestresponse"
+@page "/requestresponse/{CompanyId:guid}"
+
+@using glimpse.Entities
+@using glimpse.Models.Repository
+@using Microsoft.AspNetCore.Components
+
+@inject IRequestResponseRepository _repository
+
+<h1>Request Responses</h1>
+
+@if (RequestResponses.Any())
+{
+    <div>@RequestResponses.First().Url</div>
+    foreach (var item in RequestResponses)
+    {
+        <div>
+            <label for="@item.AcceptableResponseTimeMs">@item.AcceptableResponseTimeMs</label>
+        </div>
+        <div>
+            <label for="@item.CompanyId">@item.CompanyId</label>
+        </div>
+        <div>
+            <label for="@item.Interval">@item.Interval</label>
+        </div>
+        <div>
+            <label for="@item.IsActive">@item.IsActive</label>
+        </div>
+        <div>
+            <label for="@item.Method">@item.Method</label>
+        </div>
+        <div>
+            <label for="@item.ResponseStatus">@item.ResponseStatus</label>
+        </div>
+    }
+}
+
+@code {
+    [Parameter]
+    public Guid? CompanyId { get; set; }
+
+    [Parameter]
+    public List<RequestResponse> RequestResponses { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        RequestResponses = _repository.GetRequestResponses(CompanyId).Result.ToList();
+    }
+}

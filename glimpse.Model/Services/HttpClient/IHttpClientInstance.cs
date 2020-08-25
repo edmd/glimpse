@@ -1,4 +1,4 @@
-﻿using glimpse.Models.HttpEvent;
+﻿using glimpse.Entities;
 using System;
 using System.Threading.Tasks;
 
